@@ -95,7 +95,7 @@ public class TileInterface extends CommonTile implements IHUDProvider {
 
 	@Override
 	public double scale(boolean sneak, EnumFacing facing) {
-		return 1.;
+		return 1.0;
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class TileInterface extends CommonTile implements IHUDProvider {
 
 	public static void updateState(EntityPlayer player, boolean online) {
 		ExInventory.getInventory(player).tiles.stream().map(gp -> (TileInterface) gp.getTile()).//
-				forEach(t -> t.setOn(online));
+				forEach(t -> t.setOn(true));
 	}
 
 	@Override

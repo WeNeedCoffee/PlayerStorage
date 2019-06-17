@@ -29,17 +29,14 @@ import net.minecraftforge.fluids.FluidStack;
 public class TileKeeper extends CommonTile implements IHUDProvider {
 
 	private List<StackWrapper> items = new ArrayList<>();
-	private List<FluidStack> fluids = new ArrayList<>();
 	private String name;
 
 	public void create(ExInventory exi) {
 		items = new ArrayList<>(exi.items);
 		exi.items.clear();
-		fluids = new ArrayList<>(exi.fluids);
-		exi.fluids.clear();
 		exi.markForSync();
 		name = exi.player.getName();
-		if (items.isEmpty() && fluids.isEmpty())
+		if (items.isEmpty())
 			world.destroyBlock(pos, false);
 		else {
 			ItemStack paper = new ItemStack(Items.PAPER);
@@ -50,7 +47,7 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 			for (String s : new String[] { name, //
 					TextFormatting.GOLD + "Dimension: " + TextFormatting.GRAY + DimensionManager.getProviderType(world.provider.getDimension()).getName() + " (" + world.provider.getDimension() + ")", //
 					TextFormatting.GOLD + "Position:" + TextFormatting.GRAY + " x: " + TextFormatting.AQUA + getX() + TextFormatting.GRAY + ", y: " + TextFormatting.AQUA + getY() + TextFormatting.GRAY + ", z: " + TextFormatting.AQUA + getZ(), //
-					TextFormatting.ITALIC + "You should retrieve your items and fluids there." })
+					TextFormatting.ITALIC + "You should retrieve your items there." })
 				l.appendTag(new NBTTagString(TextFormatting.RESET + "" + TextFormatting.GRAY + s));
 			dis.setTag("Lore", l);
 			NBTHelper.set(nbt, "display", dis);
@@ -76,9 +73,6 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 					Block.spawnAsEntity(world, pos.up(), rest);
 				}
 			}
-			for (FluidStack fs : fluids) {
-				exi.insertFluid(fs, false);
-			}
 			world.destroyBlock(pos, false);
 		}
 	}
@@ -98,13 +92,6 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 			if (sw != null)
 				items.add(sw);
 		}
-		size = NBTHelper.get(compound, "fluidsize", Integer.class);
-		fluids.clear();
-		for (int i = 0; i < size; i++) {
-			FluidStack fs = FluidStack.loadFluidStackFromNBT(NBTHelper.get(compound, "fluid" + i, NBTTagCompound.class));
-			if (fs != null)
-				fluids.add(fs);
-		}
 		name = NBTHelper.get(compound, "name", String.class);
 		super.readFromNBT(compound);
 	}
@@ -114,9 +101,6 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 		NBTHelper.set(compound, "itemsize", items.size());
 		for (int i = 0; i < items.size(); i++)
 			NBTHelper.set(compound, "item" + i, items.get(i).writeToNBT(new NBTTagCompound()));
-		NBTHelper.set(compound, "fluidsize", fluids.size());
-		for (int i = 0; i < fluids.size(); i++)
-			NBTHelper.set(compound, "fluid" + i, fluids.get(i).writeToNBT(new NBTTagCompound()));
 		NBTHelper.set(compound, "name", name);
 		return super.writeToNBT(compound);
 	}

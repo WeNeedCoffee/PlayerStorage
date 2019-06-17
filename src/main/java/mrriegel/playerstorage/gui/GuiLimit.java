@@ -45,7 +45,7 @@ public class GuiLimit extends CommonGuiScreenSub {
 	public GuiLimit(Object stack) {
 		this();
 		Validate.notNull(stack);
-		Validate.isTrue(stack instanceof ItemStack || stack instanceof FluidStack);
+		Validate.isTrue(stack instanceof ItemStack);
 		this.stack = stack;
 		itemMode = stack instanceof ItemStack;
 	}
@@ -54,15 +54,12 @@ public class GuiLimit extends CommonGuiScreenSub {
 	public void initGui() {
 		super.initGui();
 		ei = ExInventory.getInventory(mc.player);
-		if (itemMode)
-			elementList.add(new ItemSlot((ItemStack) stack, 0, 7 + guiLeft, 17 + guiTop, 1, drawer, false, false, false, !false));
-		else
-			elementList.add(new FluidSlot((FluidStack) stack, 0, 7 + guiLeft, 17 + guiTop, 1, drawer, false, false, false, !false));
+		elementList.add(new ItemSlot((ItemStack) stack, 0, 7 + guiLeft, 17 + guiTop, 1, drawer, false, false, false, !false));
 		buttonList.add(new CommonGuiButton(0, guiLeft + 78, guiTop + 75, 45, 18, "Apply").setDesign(Design.SIMPLE).setButtonColor(0xFF646464));
 		GuiButton rem = new CommonGuiButton(1, guiLeft + 6, guiTop + 75, 45, 18, "Remove").setDesign(Design.SIMPLE).setButtonColor(0xFF646464);
-		rem.visible = itemMode ? ei.itemLimits.containsKey(stack) : ei.fluidLimits.containsKey(stack);
+		rem.visible = ei.itemLimits.containsKey(stack);
 		buttonList.add(rem);
-		Limit limit = itemMode ? ei.itemLimits.get(stack) : ei.fluidLimits.get(stack);
+		Limit limit = ei.itemLimits.get(stack);
 		buttonList.add(new GuiCheckBox(2, guiLeft + 75, guiTop + 19, "Void", limit.voidd));
 		min = new GuiTextField(0, fontRenderer, guiLeft + 29, guiTop + 37, 80, fontRenderer.FONT_HEIGHT);
 		min.setMaxStringLength(11);

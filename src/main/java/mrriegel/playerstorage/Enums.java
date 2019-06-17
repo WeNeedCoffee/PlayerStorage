@@ -46,6 +46,7 @@ public class Enums {
 		NOSHIFT, //
 		HIGHLIGHT, //
 		REFILL, //
+                CRAFT, //
 		DELETE;
 
 		public NBTTagCompound set(NBTTagCompound nbt) {
