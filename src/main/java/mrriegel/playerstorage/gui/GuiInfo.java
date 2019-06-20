@@ -96,61 +96,6 @@ public class GuiInfo extends CommonGuiScreenSub {
                 }
             }
         });
-        tabs.add(new Tab("Team") {
-            @Override
-            void tooltip() {
-            }
-
-            @Override
-            void init() {
-                for (int i = 0; i < 13; i++) {
-                    buttonList.add(new CommonGuiButton(i, guiLeft + 95, guiTop + 21 + 10 * i, 14, 8, TextFormatting.RED + "" + TextFormatting.BOLD + "-").setDesign(Design.NONE).setTooltip("Uninvite player"));
-                    buttonList.add(new CommonGuiButton(i + 100, guiLeft + 206, guiTop + 21 + 10 * i, 14, 8, TextFormatting.GREEN + "" + TextFormatting.BOLD + "+").setDesign(Design.NONE).setTooltip("Invite player"));
-                }
-            }
-
-            @Override
-            void draw() {
-                List<String> lis = mc.world.playerEntities.stream().filter(p -> p != mc.player).map(EntityPlayer::getName).collect(Collectors.toList());
-                team = lis.stream().filter(s -> ei.members.contains(s)).collect(Collectors.toList());
-                other = lis.stream().filter(s -> !ei.members.contains(s)).collect(Collectors.toList());
-                for (GuiButton but : buttonList) {
-                    if (but.id < 30) {
-                        but.visible = but.id < team.size();
-                    } else {
-                        but.visible = but.id - 100 < other.size();
-                    }
-                }
-                int x = 12 + guiLeft, y = 12 + guiTop;
-                drawer.drawColoredRectangle(8, 8, 100, 142, 0xffa2a2a2);
-                drawer.drawFrame(8, 8, 100, 142, 1, 0xff080808);
-                for (String s : Stream.concat(Stream.of(TextFormatting.DARK_GRAY + "" + TextFormatting.BOLD + "Team"), team.stream()).collect(Collectors.toList())) {
-                    fontRenderer.drawString(s, x, y, 0x2a2a2a);
-                    y += 10;
-                }
-                drawer.drawColoredRectangle(119, 8, 100, 142, 0xffa2a2a2);
-                drawer.drawFrame(119, 8, 100, 142, 1, 0xff080808);
-                x = 123 + guiLeft;
-                y = 12 + guiTop;
-                for (String s : Stream.concat(Stream.of(TextFormatting.DARK_GRAY + "" + TextFormatting.BOLD + "Players"), other.stream()).collect(Collectors.toList())) {
-                    fontRenderer.drawString(s, x, y, 0x2a2a2a);
-                    y += 10;
-                }
-            }
-
-            @Override
-            void click(GuiButton button) {
-                if (button.id < 30) {
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    MessageAction.TEAMUNINVITE.set(nbt);
-                    NBTHelper.set(nbt, "player1", mc.player.getName());
-                    NBTHelper.set(nbt, "player2", team.get(button.id));
-                    PacketHandler.sendToServer(new Message2Server(nbt));
-                } else {
-                    invite(other.get(button.id - 100));
-                }
-            }
-        });
         if (false) {
             tabs.add(new Tab("Crafting") {
                 int pos, maxpos;

@@ -22,7 +22,7 @@ public class Registry {
 	public static final CommonItem remote = new ItemRemote();
 
 	public static void init() {
-		interfac.registerBlock();
+		//interfac.registerBlock();
 		keeper.registerBlock();
 		apple.registerItem();
 		if (ConfigHandler.remote)
@@ -33,7 +33,7 @@ public class Registry {
 			ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "apple_" + i);
 			RegistryHelper.register(new ShapedOreRecipe(rl, new ItemStack(apple, 1, i), " o ", "oao", " o ", 'a', Items.APPLE, 'o', ore).setRegistryName(rl));
 		}
-		RecipeHelper.addShapedRecipe(new ItemStack(interfac.getItemBlock(), 2), "ses", "did", "ses", 's', "stone", 'e', "enderpearl", 'd', "gemDiamond", 'i', "ingotIron");
+		//RecipeHelper.addShapedRecipe(new ItemStack(interfac.getItemBlock(), 2), "ses", "did", "ses", 's', "stone", 'e', "enderpearl", 'd', "gemDiamond", 'i', "ingotIron");
 		if (ConfigHandler.remote) {
 			//			RecipeHelper.addShapedRecipe(new ItemStack(remote), "iii", "ipi", "iii", 'i', "nuggetIron", 'p', "paper");
 			ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "remote_recipe");

@@ -487,7 +487,7 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
     public static void join(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof EntityPlayerMP) {
             sync((EntityPlayerMP) event.getEntity());
-            TileInterface.updateState((EntityPlayer) event.getEntity(), true);
+            TileInterface.updateState((EntityPlayer) event.getEntity());
             TileInterface.refresh();
         }
     }
@@ -597,8 +597,8 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
         ExInventory ei;
         TileInterface tile;
 
-        public Handler(EntityPlayer player, @Nullable TileInterface tile) {
-            ei = getInventory(player);
+        public Handler(@Nullable TileInterface tile) {
+            ei = getInventory(tile.getPlayer());
             this.tile = tile;
         }
 

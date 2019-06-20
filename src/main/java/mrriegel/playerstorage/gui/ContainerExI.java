@@ -107,27 +107,12 @@ public final class ContainerExI extends CommonContainer<EntityPlayer> {
         return null;
     }
 
-    /*
-    @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-        Slot slot = inventorySlots.get(index);
-        if (!playerIn.world.isRemote && slot.getHasStack()) {
-            if (slot.inventory == invs.get("result")) {
-                craftShift();
-                detectAndSendChanges();
-                return ItemStack.EMPTY;
-            }
-        }
-        return super.transferStackInSlot(playerIn, index);
-    }
-     */
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int index) {
         Slot slot = inventorySlots.get(index);
         if (!player.world.isRemote && slot.getHasStack()) {
             if (slot.inventory == invs.get("result")) {
                 craftShift();
-                detectAndSendChanges();
                 return ItemStack.EMPTY;
             }
         }
@@ -194,6 +179,7 @@ public final class ContainerExI extends CommonContainer<EntityPlayer> {
                 }
             }
         }
+        detectAndSendChanges();
         return super.slotClick(slotId, dragType, clickTypeIn, player);
     }
 
@@ -217,6 +203,7 @@ public final class ContainerExI extends CommonContainer<EntityPlayer> {
                 res = result.getStackInSlot(0);
             }
         }
+        detectAndSendChanges();
     }
 
     @Override
@@ -238,48 +225,9 @@ public final class ContainerExI extends CommonContainer<EntityPlayer> {
     }
 
     public static class SlotResult extends SlotCrafting {
-
-        ExInventory ei;
-        EntityPlayer p;
-
         public SlotResult(EntityPlayer player, InventoryCrafting craftingInventory, IInventory inventoryIn, int slotIndex, int xPosition, int yPosition) {
             super(player, craftingInventory, inventoryIn, slotIndex, xPosition, yPosition);
-            //ei = ExInventory.getInventory(player);
-            //p = player;
         }
-        /*
-        private ContainerExI con() {
-            return (ContainerExI) p.openContainer;
-        }
-        @Override
-        public ItemStack onTake(EntityPlayer playerIn, ItemStack stack) {
-            if (playerIn.world.isRemote) {
-                return stack;
-            }
-            List<ItemStack> lis = Lists.newArrayList();
-            for (int i = 0; i < con().getMatrix().getSizeInventory(); i++) {
-                lis.add(con().getMatrix().getStackInSlot(i).copy());
-            }
-            super.onTake(playerIn, stack);
-            //			con().detectAndSendChanges();
-            boolean empty = con().getMatrix().isEmpty();
-            List<Ingredient> ings = con().recipe.getIngredients();
-            for (int i = 0; i < con().getMatrix().getSizeInventory(); i++) {
-                if (con().getMatrix().getStackInSlot(i).isEmpty() && !lis.get(i).isEmpty()) {
-                    ItemStack req = ei.extractItem(lis.get(i), 1, false);
-                    if (req.isEmpty() && empty) {
-                        req = ei.extractItem(getIng(ings, lis.get(i)), 1, false);
-                    }
-                    con().getMatrix().setInventorySlotContents(i, req);
-                }
-            }
-            con().onCraftMatrixChanged(null);
-            return stack;
-        }
-        private Ingredient getIng(List<Ingredient> ings, ItemStack stack) {
-            return ings.stream().filter(i -> i.apply(stack)).findAny().orElse(null);
-        }
-         */
     }
 
     public static class SlotExtra extends Slot {

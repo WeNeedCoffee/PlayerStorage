@@ -123,7 +123,7 @@ public class Message2Server extends AbstractMessage {
                     }
                     break;
                 case INCGRID:
-                    if (ei.gridHeight < 8) {
+                    if (ei.gridHeight < 10) {
                         ei.gridHeight++;
                     }
                     if (!player.world.isRemote) {
@@ -131,7 +131,7 @@ public class Message2Server extends AbstractMessage {
                     }
                     break;
                 case DECGRID:
-                    if (ei.gridHeight > 3) {
+                    if (ei.gridHeight > 4) {
                         ei.gridHeight--;
                     }
                     if (!player.world.isRemote) {
