@@ -85,6 +85,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -436,6 +437,11 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
         return (player == null || !player.hasCapability(EXINVENTORY, null)) ? null : player.getCapability(EXINVENTORY, null);
     }
 
+    /*
+    public static ExInventory getInventory(EntityPlayer player) {
+        return (player == null || !player.hasCapability(EXINVENTORY, null)) ? null : player.getCapability(EXINVENTORY, null);
+    }
+     */
     public static void sync(EntityPlayerMP player) {
         PacketHandler.sendTo(new MessageCapaSync(player), player);
     }
@@ -475,11 +481,11 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
 
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof EntityPlayer) {
-            event.addCapability(LOCATION, new Provider((EntityPlayer) event.getObject()));
-            if (!event.getObject().world.isRemote) {
-                TileInterface.refresh();
-            }
+        Entity obj = event.getObject();
+        if (obj instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) obj;
+            event.addCapability(LOCATION, new Provider(player));
+            TileInterface.refresh();
         }
     }
 
@@ -488,7 +494,15 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
         if (event.getEntity() instanceof EntityPlayerMP) {
             sync((EntityPlayerMP) event.getEntity());
             TileInterface.updateState((EntityPlayer) event.getEntity());
+        }
+    }
+
+    @SubscribeEvent
+    public static void logout(PlayerLoggedOutEvent event) {
+        ExInventory.getInventory(event.player).markForSync();
+        if (!event.player.world.isRemote) {
             TileInterface.refresh();
+            TileInterface.updateState((EntityPlayer) event.player);
         }
     }
 
@@ -617,12 +631,7 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
             if (!isPlayerOn()) {
                 return 0;
             }
-            if (ConfigHandler.betterInterface) {
-                refresh();
-                return ei.itemlist.size() + 2;
-            } else {
-                return ei.items.size() + 2;
-            }
+            return ei.items.size() + 2;
         }
 
         @Override
@@ -630,19 +639,11 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
             if (!isPlayerOn()) {
                 return ItemStack.EMPTY;
             }
-            if (ConfigHandler.betterInterface) {
-                refresh();
-                if (ei.itemlist.size() < slot || slot == 0) {
-                    return ItemStack.EMPTY;
-                }
-                return ei.itemlist.get(slot - 1);
-            } else {
-                if (ei.items.size() < slot || slot == 0) {
-                    return ItemStack.EMPTY;
-                }
-                StackWrapper w = ei.items.get(slot - 1);
-                return ItemHandlerHelper.copyStackWithSize(w.getStack(), MathHelper.clamp(w.getSize(), 1, w.getStack().getMaxStackSize()));
+            if (ei.items.size() < slot || slot == 0) {
+                return ItemStack.EMPTY;
             }
+            StackWrapper w = ei.items.get(slot - 1);
+            return ItemHandlerHelper.copyStackWithSize(w.getStack(), MathHelper.clamp(w.getSize(), 1, w.getStack().getMaxStackSize()));
         }
 
         @Override

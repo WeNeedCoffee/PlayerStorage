@@ -13,6 +13,8 @@ import mrriegel.limelib.tile.IHUDProvider;
 import mrriegel.limelib.util.GlobalBlockPos;
 import mrriegel.playerstorage.ConfigHandler;
 import mrriegel.playerstorage.ExInventory;
+import static mrriegel.playerstorage.ExInventory.getInventory;
+import static mrriegel.playerstorage.ExInventory.getPlayerByName;
 import mrriegel.playerstorage.PlayerStorage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,10 +46,17 @@ public class TileInterface extends CommonTile implements IHUDProvider {
         }
         return super.getCapability(capability, facing);
     }
-    
+
     public EntityPlayer getPlayer() {
+        for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
+            if (player == null || refreshPlayer) {
+                refreshPlayer = false;
+                return player = ExInventory.getPlayerByName(playerName, world);
+            }
+        }
         return player;
     }
+
     /*
     public EntityPlayer getPlayer() {
         if (player == null || refreshPlayer) {
@@ -56,10 +65,9 @@ public class TileInterface extends CommonTile implements IHUDProvider {
         }
         return player;
     }
-    */
-
+     */
     public void setPlayer(@Nonnull EntityPlayer player) {
-        TileInterface.player = player;
+        this.player = player;
         playerName = player.getName();
         markForSync();
     }

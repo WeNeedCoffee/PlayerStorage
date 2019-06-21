@@ -38,7 +38,7 @@ public class BlockInterface extends CommonBlockContainer<TileInterface> {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
         TileEntity t;
-        if ((t = worldIn.getTileEntity(pos)) instanceof TileInterface && placer instanceof EntityPlayer) {
+        if ((t = worldIn.getTileEntity(pos)) instanceof TileInterface) {
             ((TileInterface) t).setPlayer((EntityPlayer) placer);
             ((TileInterface) t).setOn(true);
             ExInventory.getInventory((EntityPlayer) placer).tiles.add(GlobalBlockPos.fromTile(t));
@@ -47,7 +47,11 @@ public class BlockInterface extends CommonBlockContainer<TileInterface> {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-        player.openGui(PlayerStorage.instance, 0, player.world, 0, 0, 0);
-        return true;
+        TileEntity te = world.getTileEntity(pos);
+        if (player == ((TileInterface) te).getPlayer()) {
+            player.openGui(PlayerStorage.instance, 0, player.world, 0, 0, 0);
+            return true;
+        }
+        return false;
     }
 }
