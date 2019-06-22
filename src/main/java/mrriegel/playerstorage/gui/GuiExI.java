@@ -170,7 +170,7 @@ public class GuiExI extends CommonGuiContainer {
         } else {
             drawer.drawFramedRectangle(7, 7, gridWidth * 18, gridHeight * 18);
         }
-        drawer.drawColoredRectangle(7, 7, gridWidth * 18, gridHeight * 18, mode == GuiMode.ITEM ? 0x23ffc800 : 0x2300c5cd);//highlight
+        drawer.drawColoredRectangle(7, 7, gridWidth * 18, gridHeight * 18, mode == GuiMode.ITEM ? 0xAA000000 : 0x2300c5cd);//highlight
         drawer.drawTextfield(searchBar);
         searchBar.drawTextBox();
             drawer.drawSlots(7, 29 + 18 * gridHeight, 3, 3);

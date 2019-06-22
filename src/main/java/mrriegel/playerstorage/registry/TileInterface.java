@@ -48,11 +48,9 @@ public class TileInterface extends CommonTile implements IHUDProvider {
     }
 
     public EntityPlayer getPlayer() {
-        for (World world : FMLCommonHandler.instance().getMinecraftServerInstance().worlds) {
-            if (player == null || refreshPlayer) {
-                refreshPlayer = false;
-                return player = ExInventory.getPlayerByName(playerName, world);
-            }
+        if (player == null || refreshPlayer) {
+            refreshPlayer = false;
+            return player = ExInventory.getPlayerByName(playerName, world);
         }
         return player;
     }

@@ -481,11 +481,11 @@ public class ExInventory implements INBTSerializable<NBTTagCompound> {
 
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
-        Entity obj = event.getObject();
-        if (obj instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) obj;
-            event.addCapability(LOCATION, new Provider(player));
-            TileInterface.refresh();
+        if (event.getObject() instanceof EntityPlayer) {
+            event.addCapability(LOCATION, new Provider((EntityPlayer) event.getObject()));
+            if (!event.getObject().world.isRemote) {
+                TileInterface.refresh();
+            }
         }
     }
 

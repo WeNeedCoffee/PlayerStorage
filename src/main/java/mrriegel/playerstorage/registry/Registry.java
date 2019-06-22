@@ -14,8 +14,8 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class Registry {
 
     //blocks
-    public static final CommonBlock interfac = new BlockInterface();
-    public static final CommonBlock keeper = new BlockKeeper();
+    //public static final CommonBlock interfac = new BlockInterface();
+    //public static final CommonBlock keeper = new BlockKeeper();
 
     //items
     public static final ItemApple apple = new ItemApple();
