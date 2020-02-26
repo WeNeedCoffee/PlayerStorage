@@ -14,18 +14,18 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 public class Registry {
 
     //blocks
-    //public static final CommonBlock interfac = new BlockInterface();
-    //public static final CommonBlock keeper = new BlockKeeper();
+    public static final CommonBlock interfac = new BlockInterface();
+    public static final CommonBlock keeper = new BlockKeeper();
 
     //items
     public static final ItemApple apple = new ItemApple();
     public static final CommonItem remote = new ItemRemote();
 
     public static void init() {
-        //interfac.registerBlock();
-        //keeper.registerBlock();
+        interfac.registerBlock();
+        keeper.registerBlock();
         apple.registerItem();
-
+        remote.registerItem();
         for (int i = 0; i < ConfigHandler.appleList.size(); i++) {
             String ore = ConfigHandler.appleList.get(i);
             ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "apple_" + i);

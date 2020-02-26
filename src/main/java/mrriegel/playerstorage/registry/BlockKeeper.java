@@ -28,7 +28,8 @@ public class BlockKeeper extends CommonBlockContainer<TileKeeper> {
         setSoundType(SoundType.STONE);
     }
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public void registerBlock() {
         super.registerBlock();
         //TODO unregister

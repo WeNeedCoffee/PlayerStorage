@@ -156,6 +156,7 @@ public class GuiExI extends CommonGuiContainer {
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         drawDefaultBackground();
+        //super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
         drawer.drawBackgroundTexture();
         if (PlayerStorage.baubles) {
             mc.getTextureManager().bindTexture(GuiPlayerExpanded.background);
@@ -206,6 +207,21 @@ public class GuiExI extends CommonGuiContainer {
                 slot.drawTooltip(mouseX, mouseY);
             }
         }
+        boolean big = isPointInRegion(133, 9 + 18 * gridHeight, 18, 18, mouseX, mouseY);
+		if (big)
+			hoverCounter++;
+		else
+			hoverCounter = 0;
+		int x = 133 + guiLeft + 9, y = 9 + 18 * gridHeight + guiTop + 17;
+		if (hoverCounter > Minecraft.getDebugFPS() / 5) {
+			GlStateManager.translate(0, 0, 900);
+			drawDefaultBackground();
+			y += 50;
+			GuiInventory.drawEntityOnScreen(x, y, 48, x - mouseX, (y - mouseY) - guiTop, mc.player);
+			String s = "Click to open vanilla inventory.";
+			drawString(fontRenderer, s, x - (fontRenderer.getStringWidth(s) / 2) + (mouseX - 133 - guiLeft), y + 8 + (mouseY - (9 + 18 * gridHeight) - guiTop), 0xE0E0E0);
+			GlStateManager.translate(0, 0, -900);
+		}
         if (fragezeichen) {
             List<String> lis = new ArrayList<>();
             lis.add(TextFormatting.AQUA + "- " + TextFormatting.RESET + "Hover over an item in your inventory and press " + ClientProxy.OPENLIMIT.getDisplayName() + " to adjust the limit.");
