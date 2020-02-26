@@ -24,18 +24,26 @@ public class Registry {
 		interfac.registerBlock();
 		keeper.registerBlock();
 		apple.registerItem();
-		remote.registerItem();
+		if (ConfigHandler.remote)
+			remote.registerItem();
 		for (int i = 0; i < ConfigHandler.appleList.size(); i++) {
 			String ore = ConfigHandler.appleList.get(i);
 			ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "apple_" + i);
 			RegistryHelper.register(new ShapedOreRecipe(rl, new ItemStack(apple, 1, i), " o ", "oao", " o ", 'a', Items.APPLE, 'o', ore).setRegistryName(rl));
 		}
+		if (ConfigHandler.remote) {
+			//			RecipeHelper.addShapedRecipe(new ItemStack(remote), "iii", "ipi", "iii", 'i', "nuggetIron", 'p', "paper");
+			ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "remote_recipe");
+			RegistryHelper.register(new ShapedOreRecipe(rl, new ItemStack(remote), "iii", "ipi", "iii", 'i', "nuggetIron", 'p', "paper").setRegistryName(rl));
+		}
 		//RecipeHelper.addShapedRecipe(new ItemStack(interfac.getItemBlock(), 2), "ses", "did", "ses", 's', "stone", 'e', "enderpearl", 'd', "gemDiamond", 'i', "ingotIron");
 	}
 
 	public static void initClient() {
-		//interfac.initModel();
+		interfac.initModel();
 		apple.initModel();
+		if (ConfigHandler.remote)
+			remote.initModel();
 	}
 
 }
