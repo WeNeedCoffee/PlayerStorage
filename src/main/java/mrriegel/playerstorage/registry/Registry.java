@@ -1,6 +1,7 @@
 package mrriegel.playerstorage.registry;
 
 import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.helper.RecipeHelper;
 import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.playerstorage.ConfigHandler;
@@ -36,7 +37,7 @@ public class Registry {
 			ResourceLocation rl = new ResourceLocation(PlayerStorage.MODID, "remote_recipe");
 			RegistryHelper.register(new ShapedOreRecipe(rl, new ItemStack(remote), "iii", "ipi", "iii", 'i', "nuggetIron", 'p', "paper").setRegistryName(rl));
 		}
-		//RecipeHelper.addShapedRecipe(new ItemStack(interfac.getItemBlock(), 2), "ses", "did", "ses", 's', "stone", 'e', "enderpearl", 'd', "gemDiamond", 'i', "ingotIron");
+		RecipeHelper.addShapedRecipe(new ItemStack(interfac.getItemBlock(), 2), "ses", "did", "ses", 's', "stone", 'e', "enderpearl", 'd', "gemDiamond", 'i', "ingotIron");
 	}
 
 	public static void initClient() {

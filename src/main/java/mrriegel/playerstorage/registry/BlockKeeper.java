@@ -42,15 +42,6 @@ public class BlockKeeper extends CommonBlockContainer<TileKeeper> {
 		//		super.onBlockExploded(world, pos, explosion);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void registerBlock() {
-		super.registerBlock();
-		//TODO unregister
-		//		RegistryHelper.unregister(getItemBlock());
-		((List<IForgeRegistryEntry<?>>) ReflectionHelper.getPrivateValue(RegistryHelper.class, null, "entries")).remove(getItemBlock());
-	}
-
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
 		TileEntity t = world.getTileEntity(pos);

@@ -1,6 +1,8 @@
 package mrriegel.playerstorage.registry;
 
+import java.util.List;
 import mrriegel.limelib.block.CommonBlockContainer;
+import mrriegel.limelib.helper.RegistryHelper;
 import mrriegel.limelib.util.GlobalBlockPos;
 import mrriegel.playerstorage.ExInventory;
 import mrriegel.playerstorage.PlayerStorage;
@@ -15,6 +17,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class BlockInterface extends CommonBlockContainer<TileInterface> {
 
@@ -28,7 +32,10 @@ public class BlockInterface extends CommonBlockContainer<TileInterface> {
 	protected Class<? extends TileInterface> getTile() {
 		return TileInterface.class;
 	}
-
+	public void registerItem() {
+		RegistryHelper.register(this);
+	}
+	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);

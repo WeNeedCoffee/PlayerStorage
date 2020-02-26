@@ -25,11 +25,11 @@ minecraft {
 }
 
 dependencies {
+ compile project(":LimeLib")
     deobfCompile "org.cyclops.commoncapabilities:CommonCapabilities:1.12.2-1.4.0-190"
     deobfCompile "com.azanor.baubles:Baubles:1.12-1.5.2"
 	deobfCompile "mezz.jei:jei_1.12.2:+"
 	deobfCompile "mcp.mobius.waila:Hwyla:1.8+"
-	compile files('limelib-1.12.2-1.7.12.jar')
 }
 
 processResources {
