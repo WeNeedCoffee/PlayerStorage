@@ -8,14 +8,14 @@ public class Limit {
 	public final int min, max;
 	public final boolean voidd;
 
+	public Limit(BlockPos pos) {
+		this(pos.getX(), pos.getZ(), pos.getY() != 0);
+	}
+
 	public Limit(int min, int max, boolean voidd) {
 		this.min = min;
 		this.max = max;
 		this.voidd = voidd;
-	}
-
-	public Limit(BlockPos pos) {
-		this(pos.getX(), pos.getZ(), pos.getY() != 0);
 	}
 
 	public BlockPos toPos() {

@@ -7,27 +7,48 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 public class ConfigHandler {
 
+	static class Unit1 {
+
+		public String oreName;
+		public Unit2 entry;
+
+		public Unit1(String oreName, int i1) {
+			super();
+			this.oreName = oreName;
+			entry = new Unit2(i1);
+		}
+	}
+
+	public static class Unit2 {
+
+		public int itemLimit;
+
+		public Unit2(int itemLimit) {
+			super();
+			this.itemLimit = itemLimit;
+		}
+	}
+
 	public static Configuration config;
 	public static int itemCapacity;
 	public static boolean infiniteSpace, remote, keeper, betterInterface, useFluidStorage;
+
 	public static Map<String, Unit2> apples = new HashMap<>();
+
 	@SuppressWarnings("serial")
 	public static List<String> appleList = new ArrayList<String>(6) {
 		@Override
 		public String get(int index) {
-			if (index >= size()) {
+			if (index >= size())
 				return "";
-			}
 			return super.get(index);
 		}
 	};
@@ -67,28 +88,6 @@ public class ConfigHandler {
 
 		if (config.hasChanged()) {
 			config.save();
-		}
-	}
-
-	static class Unit1 {
-
-		public String oreName;
-		public Unit2 entry;
-
-		public Unit1(String oreName, int i1) {
-			super();
-			this.oreName = oreName;
-			this.entry = new Unit2(i1);
-		}
-	}
-
-	public static class Unit2 {
-
-		public int itemLimit;
-
-		public Unit2(int itemLimit) {
-			super();
-			this.itemLimit = itemLimit;
 		}
 	}
 

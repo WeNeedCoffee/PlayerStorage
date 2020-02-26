@@ -15,10 +15,18 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy implements IGuiHandler {
 
-	public void preInit(FMLPreInitializationEvent event) {
-		ConfigHandler.refreshConfig(event.getSuggestedConfigurationFile());
-		ExInventory.register();
-		Registry.init();
+	@Override
+	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+		if (ID == 0)
+			return new GuiExI(new ContainerExI(player.inventory));
+		return null;
+	}
+
+	@Override
+	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+		if (ID == 0)
+			return new ContainerExI(player.inventory);
+		return null;
 	}
 
 	public void init(FMLInitializationEvent event) {
@@ -30,18 +38,10 @@ public class CommonProxy implements IGuiHandler {
 	public void postInit(FMLPostInitializationEvent event) {
 	}
 
-	@Override
-	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if (ID == 0)
-			return new ContainerExI(player.inventory);
-		return null;
-	}
-
-	@Override
-	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if (ID == 0)
-			return new GuiExI(new ContainerExI(player.inventory));
-		return null;
+	public void preInit(FMLPreInitializationEvent event) {
+		ConfigHandler.refreshConfig(event.getSuggestedConfigurationFile());
+		ExInventory.register();
+		Registry.init();
 	}
 
 }

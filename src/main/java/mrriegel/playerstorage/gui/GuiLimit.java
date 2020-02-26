@@ -1,17 +1,13 @@
 package mrriegel.playerstorage.gui;
 
 import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.input.Keyboard;
-
 import com.google.common.base.Predicate;
-
 import mrriegel.limelib.gui.CommonGuiScreenSub;
 import mrriegel.limelib.gui.button.CommonGuiButton;
 import mrriegel.limelib.gui.button.CommonGuiButton.Design;
-import mrriegel.limelib.gui.element.AbstractSlot.FluidSlot;
 import mrriegel.limelib.gui.element.AbstractSlot.ItemSlot;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.network.PacketHandler;
@@ -25,7 +21,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -51,25 +46,32 @@ public class GuiLimit extends CommonGuiScreenSub {
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-		ei = ExInventory.getInventory(mc.player);
-		elementList.add(new ItemSlot((ItemStack) stack, 0, 7 + guiLeft, 17 + guiTop, 1, drawer, false, false, false, !false));
-		buttonList.add(new CommonGuiButton(0, guiLeft + 78, guiTop + 75, 45, 18, "Apply").setDesign(Design.SIMPLE).setButtonColor(0xFF646464));
-		GuiButton rem = new CommonGuiButton(1, guiLeft + 6, guiTop + 75, 45, 18, "Remove").setDesign(Design.SIMPLE).setButtonColor(0xFF646464);
-		rem.visible = ei.itemLimits.containsKey(stack);
-		buttonList.add(rem);
-		Limit limit = ei.itemLimits.get(stack);
-		buttonList.add(new GuiCheckBox(2, guiLeft + 75, guiTop + 19, "Void", limit.voidd));
-		min = new GuiTextField(0, fontRenderer, guiLeft + 29, guiTop + 37, 80, fontRenderer.FONT_HEIGHT);
-		min.setMaxStringLength(11);
-		Predicate<String> pred = s -> s.isEmpty() || (StringUtils.isNumeric(s) && Integer.parseInt(s) >= 0 && Integer.parseInt(s) <= Limit.defaultValue.max);
-		min.setValidator(pred);
-		min.setText(limit.min + "");
-		max = new GuiTextField(0, fontRenderer, guiLeft + 29, guiTop + 57, 80, fontRenderer.FONT_HEIGHT);
-		max.setMaxStringLength(11);
-		max.setValidator(pred);
-		max.setText(limit.max + "");
+	protected void actionPerformed(GuiButton button) throws IOException {
+		super.actionPerformed(button);
+		if (button.id == 0 || button.id == 1) {
+			NBTTagCompound nbt = new NBTTagCompound();
+			NBTHelper.set(nbt, "itemMode", itemMode);
+			MessageAction.SETLIMIT.set(nbt);
+			NBTHelper.set(nbt, "stack", stack);
+			if (button.id == 0) {
+				NBTHelper.set(nbt, "min", min.getText().isEmpty() ? 0 : Integer.parseInt(min.getText()));
+				NBTHelper.set(nbt, "max", max.getText().isEmpty() ? 0 : Integer.parseInt(max.getText()));
+				GuiCheckBox box = (GuiCheckBox) buttonList.stream().filter(b -> b.id == 2).findAny().orElse(null);
+				if (box != null) {
+					NBTHelper.set(nbt, "void", box.isChecked());
+				}
+			} else if (button.id == 1) {
+				NBTHelper.set(nbt, "remove", true);
+			}
+			PacketHandler.sendToServer(new Message2Server(nbt));
+			new Message2Server().handleMessage(mc.player, nbt, Side.CLIENT);
+			keyTyped(' ', Keyboard.KEY_ESCAPE);
+		}
+	}
+
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
 	}
 
 	@Override
@@ -88,33 +90,25 @@ public class GuiLimit extends CommonGuiScreenSub {
 	}
 
 	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-		min.mouseClicked(mouseX, mouseY, mouseButton);
-		max.mouseClicked(mouseX, mouseY, mouseButton);
-	}
-
-	@Override
-	protected void actionPerformed(GuiButton button) throws IOException {
-		super.actionPerformed(button);
-		if (button.id == 0 || button.id == 1) {
-			NBTTagCompound nbt = new NBTTagCompound();
-			NBTHelper.set(nbt, "itemMode", itemMode);
-			MessageAction.SETLIMIT.set(nbt);
-			NBTHelper.set(nbt, "stack", stack);
-			if (button.id == 0) {
-				NBTHelper.set(nbt, "min", min.getText().isEmpty() ? 0 : Integer.parseInt(min.getText()));
-				NBTHelper.set(nbt, "max", max.getText().isEmpty() ? 0 : Integer.parseInt(max.getText()));
-				GuiCheckBox box = (GuiCheckBox) buttonList.stream().filter(b -> b.id == 2).findAny().orElse(null);
-				if (box != null)
-					NBTHelper.set(nbt, "void", box.isChecked());
-			} else if (button.id == 1) {
-				NBTHelper.set(nbt, "remove", true);
-			}
-			PacketHandler.sendToServer(new Message2Server(nbt));
-			new Message2Server().handleMessage(mc.player, nbt, Side.CLIENT);
-			keyTyped(' ', Keyboard.KEY_ESCAPE);
-		}
+	public void initGui() {
+		super.initGui();
+		ei = ExInventory.getInventory(mc.player);
+		elementList.add(new ItemSlot((ItemStack) stack, 0, 7 + guiLeft, 17 + guiTop, 1, drawer, false, false, false, !false));
+		buttonList.add(new CommonGuiButton(0, guiLeft + 78, guiTop + 75, 45, 18, "Apply").setDesign(Design.SIMPLE).setButtonColor(0xFF646464));
+		GuiButton rem = new CommonGuiButton(1, guiLeft + 6, guiTop + 75, 45, 18, "Remove").setDesign(Design.SIMPLE).setButtonColor(0xFF646464);
+		rem.visible = ei.itemLimits.containsKey(stack);
+		buttonList.add(rem);
+		Limit limit = ei.itemLimits.get(stack);
+		buttonList.add(new GuiCheckBox(2, guiLeft + 75, guiTop + 19, "Void", limit.voidd));
+		min = new GuiTextField(0, fontRenderer, guiLeft + 29, guiTop + 37, 80, fontRenderer.FONT_HEIGHT);
+		min.setMaxStringLength(11);
+		Predicate<String> pred = s -> s.isEmpty() || StringUtils.isNumeric(s) && Integer.parseInt(s) >= 0 && Integer.parseInt(s) <= Limit.defaultValue.max;
+		min.setValidator(pred);
+		min.setText(limit.min + "");
+		max = new GuiTextField(0, fontRenderer, guiLeft + 29, guiTop + 57, 80, fontRenderer.FONT_HEIGHT);
+		max.setMaxStringLength(11);
+		max.setValidator(pred);
+		max.setText(limit.max + "");
 	}
 
 	@Override
@@ -125,8 +119,10 @@ public class GuiLimit extends CommonGuiScreenSub {
 	}
 
 	@Override
-	public boolean doesGuiPauseGame() {
-		return false;
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		min.mouseClicked(mouseX, mouseY, mouseButton);
+		max.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
 }

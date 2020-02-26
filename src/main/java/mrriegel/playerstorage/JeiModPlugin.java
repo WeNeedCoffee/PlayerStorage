@@ -2,7 +2,6 @@ package mrriegel.playerstorage;
 
 import java.util.List;
 import java.util.Map;
-
 import mezz.jei.Internal;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
@@ -51,13 +50,14 @@ public class JeiModPlugin implements IModPlugin {
 					for (int i = 1; i < 10; i++) {
 						List<ItemStack> ings = inputs.get(i).getAllIngredients();
 						String ore = Internal.getStackHelper().getOreDictEquivalent(ings);
-						if (ore != null)
+						if (ore != null) {
 							nbt.setString(i - 1 + "", ore);
-						else {
+						} else {
 							NBTTagList tag = new NBTTagList();
 							nbt.setTag(i - 1 + "", tag);
-							for (ItemStack s : ings)
+							for (ItemStack s : ings) {
 								tag.appendTag(s.writeToNBT(new NBTTagCompound()));
+							}
 						}
 					}
 

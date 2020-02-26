@@ -1,7 +1,6 @@
 package mrriegel.playerstorage.registry;
 
 import java.util.Optional;
-
 import mrriegel.limelib.item.CommonItem;
 import mrriegel.playerstorage.ExInventory;
 import mrriegel.playerstorage.PlayerStorage;

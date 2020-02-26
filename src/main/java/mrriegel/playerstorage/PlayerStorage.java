@@ -24,13 +24,6 @@ public class PlayerStorage {
 	public static CommonProxy proxy;
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
-		proxy.preInit(event);
-		commonCaps = Loader.isModLoaded("commoncapabilities");
-		baubles = Loader.isModLoaded("baubles");
-	}
-
-	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		proxy.init(event);
 	}
@@ -38,6 +31,13 @@ public class PlayerStorage {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		proxy.postInit(event);
+	}
+
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		proxy.preInit(event);
+		commonCaps = Loader.isModLoaded("commoncapabilities");
+		baubles = Loader.isModLoaded("baubles");
 	}
 
 }

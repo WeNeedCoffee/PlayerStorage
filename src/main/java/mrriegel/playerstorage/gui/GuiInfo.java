@@ -33,32 +33,42 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiInfo extends CommonGuiScreenSub {
 
-	ExInventory ei;
+	static abstract class Tab {
+
+		String name;
+
+		public Tab(String name) {
+			this.name = name;
+		}
+
+		abstract void click(GuiButton button);
+
+		abstract void draw();
+
+		abstract void init();
+
+		abstract void tooltip();
+
+	}
+
 	private static int index = 0;
+	ExInventory ei;
 	List<Tab> tabs = new ArrayList<>();
 	Integer active = null;
 	long lastInvite = 0L;
+
 	List<String> team, other;
 
 	@SuppressWarnings("unused")
 	public GuiInfo() {
 		super();
-		this.ei = ExInventory.getInventory(Minecraft.getMinecraft().player);
+		ei = ExInventory.getInventory(Minecraft.getMinecraft().player);
 		xSize = 230;
 		ySize = 160;
 		tabs.add(new Tab("Info") {
 
 			@Override
-			void tooltip() {
-				String inter = "Interfaces";
-				if (isPointInRegion(11, 80, fontRenderer.getStringWidth(inter), fontRenderer.FONT_HEIGHT, GuiDrawer.getMouseX(), GuiDrawer.getMouseY())) {
-					List<String> l = ei.tiles.stream().map(gp -> "Dim:" + gp.getDimension() + ", x:" + gp.getPos().getX() + " y:" + gp.getPos().getY() + " z:" + gp.getPos().getZ()).collect(Collectors.toList());
-					drawHoveringText(l.isEmpty() ? Arrays.asList("No Interfaces") : l, GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
-				}
-			}
-
-			@Override
-			void init() {
+			void click(GuiButton button) {
 			}
 
 			@Override
@@ -79,33 +89,19 @@ public class GuiInfo extends CommonGuiScreenSub {
 			}
 
 			@Override
-			void click(GuiButton button) {
+			void init() {
 			}
-		});
-		tabs.add(new Tab("Settings") {
 
 			@Override
 			void tooltip() {
-				if (buttonList.get(0).isMouseOver()) {
-					drawHoveringText(Lists.newArrayList("Insert picked up items into your storage.", "Hold " + Keyboard.getKeyName(ClientProxy.INVERTPICKUP.getKeyCode()) + " to invert temporarily."), GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
-				} else if (buttonList.get(1).isMouseOver()) {
-					drawHoveringText("Usually you use shift-click to transfer items into the player storage. When this is enabled you transfer items with CTRL, so you can use shift to transfer items between player inventory and hotbar.", GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
-				} else if (buttonList.get(2).isMouseOver()) {
-					drawHoveringText("If enabled broken tools/used items will be replaced with items from the player storage.", GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
+				String inter = "Interfaces";
+				if (isPointInRegion(11, 80, fontRenderer.getStringWidth(inter), fontRenderer.FONT_HEIGHT, GuiDrawer.getMouseX(), GuiDrawer.getMouseY())) {
+					List<String> l = ei.tiles.stream().map(gp -> "Dim:" + gp.getDimension() + ", x:" + gp.getPos().getX() + " y:" + gp.getPos().getY() + " z:" + gp.getPos().getZ()).collect(Collectors.toList());
+					drawHoveringText(l.isEmpty() ? Arrays.asList("No Interfaces") : l, GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
 				}
 			}
-
-			@Override
-			void init() {
-				buttonList.add(new GuiCheckBox(MessageAction.PICKUP.ordinal(), guiLeft + 10, guiTop + 10, "Auto Pickup", ei.autoPickup));
-				buttonList.add(new GuiCheckBox(MessageAction.NOSHIFT.ordinal(), guiLeft + 10, guiTop + 24, "CTRL <-> SHIFT", ei.noshift));
-				buttonList.add(new GuiCheckBox(MessageAction.REFILL.ordinal(), guiLeft + 10, guiTop + 38, "Auto Refill", ei.refill));
-			}
-
-			@Override
-			void draw() {
-				drawer.drawColoredRectangle(7, 7, 216, 45 + 14, 0x44000000);
-			}
+		});
+		tabs.add(new Tab("Settings") {
 
 			@Override
 			void click(GuiButton button) {
@@ -129,19 +125,43 @@ public class GuiInfo extends CommonGuiScreenSub {
 					new Message2Server().handleMessage(mc.player, nbt, Side.CLIENT);
 				}
 			}
+
+			@Override
+			void draw() {
+				drawer.drawColoredRectangle(7, 7, 216, 45 + 14, 0x44000000);
+			}
+
+			@Override
+			void init() {
+				buttonList.add(new GuiCheckBox(MessageAction.PICKUP.ordinal(), guiLeft + 10, guiTop + 10, "Auto Pickup", ei.autoPickup));
+				buttonList.add(new GuiCheckBox(MessageAction.NOSHIFT.ordinal(), guiLeft + 10, guiTop + 24, "CTRL <-> SHIFT", ei.noshift));
+				buttonList.add(new GuiCheckBox(MessageAction.REFILL.ordinal(), guiLeft + 10, guiTop + 38, "Auto Refill", ei.refill));
+			}
+
+			@Override
+			void tooltip() {
+				if (buttonList.get(0).isMouseOver()) {
+					drawHoveringText(Lists.newArrayList("Insert picked up items into your storage.", "Hold " + Keyboard.getKeyName(ClientProxy.INVERTPICKUP.getKeyCode()) + " to invert temporarily."), GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
+				} else if (buttonList.get(1).isMouseOver()) {
+					drawHoveringText("Usually you use shift-click to transfer items into the player storage. When this is enabled you transfer items with CTRL, so you can use shift to transfer items between player inventory and hotbar.", GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
+				} else if (buttonList.get(2).isMouseOver()) {
+					drawHoveringText("If enabled broken tools/used items will be replaced with items from the player storage.", GuiDrawer.getMouseX(), GuiDrawer.getMouseY());
+				}
+			}
 		});
 		tabs.add(new Tab("Team") {
 			List<String> team, other;
 
 			@Override
-			void tooltip() {
-			}
-
-			@Override
-			void init() {
-				for (int i = 0; i < 13; i++) {
-					buttonList.add(new CommonGuiButton(i, guiLeft + 95, guiTop + 21 + 10 * i, 14, 8, TextFormatting.RED + "" + TextFormatting.BOLD + "-").setDesign(Design.NONE).setTooltip("Uninvite player"));
-					buttonList.add(new CommonGuiButton(i + 100, guiLeft + 206, guiTop + 21 + 10 * i, 14, 8, TextFormatting.GREEN + "" + TextFormatting.BOLD + "+").setDesign(Design.NONE).setTooltip("Invite player"));
+			void click(GuiButton button) {
+				if (button.id < 30) {
+					NBTTagCompound nbt = new NBTTagCompound();
+					MessageAction.TEAMUNINVITE.set(nbt);
+					NBTHelper.set(nbt, "player1", mc.player.getName());
+					NBTHelper.set(nbt, "player2", team.get(button.id));
+					PacketHandler.sendToServer(new Message2Server(nbt));
+				} else {
+					invite(other.get(button.id - 100));
 				}
 			}
 
@@ -175,16 +195,15 @@ public class GuiInfo extends CommonGuiScreenSub {
 			}
 
 			@Override
-			void click(GuiButton button) {
-				if (button.id < 30) {
-					NBTTagCompound nbt = new NBTTagCompound();
-					MessageAction.TEAMUNINVITE.set(nbt);
-					NBTHelper.set(nbt, "player1", mc.player.getName());
-					NBTHelper.set(nbt, "player2", team.get(button.id));
-					PacketHandler.sendToServer(new Message2Server(nbt));
-				} else {
-					invite(other.get(button.id - 100));
+			void init() {
+				for (int i = 0; i < 13; i++) {
+					buttonList.add(new CommonGuiButton(i, guiLeft + 95, guiTop + 21 + 10 * i, 14, 8, TextFormatting.RED + "" + TextFormatting.BOLD + "-").setDesign(Design.NONE).setTooltip("Uninvite player"));
+					buttonList.add(new CommonGuiButton(i + 100, guiLeft + 206, guiTop + 21 + 10 * i, 14, 8, TextFormatting.GREEN + "" + TextFormatting.BOLD + "+").setDesign(Design.NONE).setTooltip("Invite player"));
 				}
+			}
+
+			@Override
+			void tooltip() {
 			}
 		});
 
@@ -193,16 +212,7 @@ public class GuiInfo extends CommonGuiScreenSub {
 				int pos, maxpos;
 
 				@Override
-				void tooltip() {
-					//				drawHoveringText(Arrays.asList("micha"), drawer.getMouseX(), drawer.getMouseY());
-				}
-
-				@Override
-				void init() {
-					for (int i = 0; i < Math.min(6, ei.recipes.size()); i++) {
-						buttonList.add(new CommonGuiButton(i, guiLeft + 15, guiTop + 23 + 20 * i, 18, 18, "").setDesign(Design.SIMPLE));
-						//					buttonList.add(new CommonGuiButton(i + 100, guiLeft + 206, guiTop + 21 + 10 * i, 14, 8, TextFormatting.GREEN + "" + TextFormatting.BOLD + "+").setTooltip("Invite player"));
-					}
+				void click(GuiButton button) {
 				}
 
 				@Override
@@ -237,20 +247,30 @@ public class GuiInfo extends CommonGuiScreenSub {
 				}
 
 				@Override
-				void click(GuiButton button) {
+				void init() {
+					for (int i = 0; i < Math.min(6, ei.recipes.size()); i++) {
+						buttonList.add(new CommonGuiButton(i, guiLeft + 15, guiTop + 23 + 20 * i, 18, 18, "").setDesign(Design.SIMPLE));
+						//					buttonList.add(new CommonGuiButton(i + 100, guiLeft + 206, guiTop + 21 + 10 * i, 14, 8, TextFormatting.GREEN + "" + TextFormatting.BOLD + "+").setTooltip("Invite player"));
+					}
+				}
+
+				@Override
+				void tooltip() {
+					//				drawHoveringText(Arrays.asList("micha"), drawer.getMouseX(), drawer.getMouseY());
 				}
 			});
 		}
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-		tabs.get(index).init();
+	protected void actionPerformed(GuiButton button) throws IOException {
+		super.actionPerformed(button);
+		tabs.get(index).click(button);
 	}
 
-	public void getTeamSize() {
-		team.size();
+	@Override
+	public boolean doesGuiPauseGame() {
+		return false;
 	}
 
 	@Override
@@ -284,10 +304,32 @@ public class GuiInfo extends CommonGuiScreenSub {
 		tabs.get(index).tooltip();
 	}
 
+	public void getTeamSize() {
+		team.size();
+	}
+
 	@Override
-	protected void actionPerformed(GuiButton button) throws IOException {
-		super.actionPerformed(button);
-		tabs.get(index).click(button);
+	public void initGui() {
+		super.initGui();
+		tabs.get(index).init();
+	}
+
+	private void invite(String p) {
+		if (System.currentTimeMillis() - lastInvite < 5000) {
+			mc.player.sendMessage(new TextComponentString("Wait a bit... (Spam Protection)"));
+			return;
+		}
+		if (mc.player.getName().equals(p) || ei.members.contains(p))
+			return;
+		lastInvite = System.currentTimeMillis();
+		EntityPlayer player = mc.world.getPlayerEntityByName(p);
+		if (player == null)
+			return;
+		NBTTagCompound nbt = new NBTTagCompound();
+		MessageAction.TEAMINVITE.set(nbt);
+		NBTHelper.set(nbt, "player1", mc.player.getName());
+		NBTHelper.set(nbt, "player2", p);
+		PacketHandler.sendToServer(new Message2Server(nbt));
 	}
 
 	@Override
@@ -304,49 +346,6 @@ public class GuiInfo extends CommonGuiScreenSub {
 			}
 
 		}
-	}
-
-	@Override
-	public boolean doesGuiPauseGame() {
-		return false;
-	}
-
-	private void invite(String p) {
-		if (System.currentTimeMillis() - lastInvite < 5000) {
-			mc.player.sendMessage(new TextComponentString("Wait a bit... (Spam Protection)"));
-			return;
-		}
-		if (mc.player.getName().equals(p) || ei.members.contains(p)) {
-			return;
-		}
-		lastInvite = System.currentTimeMillis();
-		EntityPlayer player = mc.world.getPlayerEntityByName(p);
-		if (player == null) {
-			return;
-		}
-		NBTTagCompound nbt = new NBTTagCompound();
-		MessageAction.TEAMINVITE.set(nbt);
-		NBTHelper.set(nbt, "player1", mc.player.getName());
-		NBTHelper.set(nbt, "player2", p);
-		PacketHandler.sendToServer(new Message2Server(nbt));
-	}
-
-	static abstract class Tab {
-
-		String name;
-
-		public Tab(String name) {
-			this.name = name;
-		}
-
-		abstract void init();
-
-		abstract void draw();
-
-		abstract void tooltip();
-
-		abstract void click(GuiButton button);
-
 	}
 
 }

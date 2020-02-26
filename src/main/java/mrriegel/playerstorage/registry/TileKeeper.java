@@ -3,7 +3,6 @@ package mrriegel.playerstorage.registry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.limelib.tile.IHUDProvider;
@@ -24,7 +23,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.fluids.FluidStack;
 
 public class TileKeeper extends CommonTile implements IHUDProvider {
 
@@ -36,9 +34,9 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 		exi.items.clear();
 		exi.markForSync();
 		name = exi.player.getName();
-		if (items.isEmpty())
+		if (items.isEmpty()) {
 			world.destroyBlock(pos, false);
-		else {
+		} else {
 			ItemStack paper = new ItemStack(Items.PAPER);
 			NBTTagCompound nbt = new NBTTagCompound();
 			NBTTagCompound dis = new NBTTagCompound();
@@ -47,8 +45,9 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 			for (String s : new String[] { name, //
 					TextFormatting.GOLD + "Dimension: " + TextFormatting.GRAY + DimensionManager.getProviderType(world.provider.getDimension()).getName() + " (" + world.provider.getDimension() + ")", //
 					TextFormatting.GOLD + "Position:" + TextFormatting.GRAY + " x: " + TextFormatting.AQUA + getX() + TextFormatting.GRAY + ", y: " + TextFormatting.AQUA + getY() + TextFormatting.GRAY + ", z: " + TextFormatting.AQUA + getZ(), //
-					TextFormatting.ITALIC + "You should retrieve your items there." })
+					TextFormatting.ITALIC + "You should retrieve your items there." }) {
 				l.appendTag(new NBTTagString(TextFormatting.RESET + "" + TextFormatting.GRAY + s));
+			}
 			dis.setTag("Lore", l);
 			NBTHelper.set(nbt, "display", dis);
 			paper.setTagCompound(nbt);
@@ -78,6 +77,16 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 	}
 
 	@Override
+	public List<String> getData(boolean sneak, EnumFacing facing) {
+		return Collections.singletonList(TextFormatting.GOLD + "Owner: " + (name == null ? TextFormatting.RED : TextFormatting.GREEN) + name);
+	}
+
+	@Override
+	public boolean lineBreak(boolean sneak, EnumFacing facing) {
+		return false;
+	}
+
+	@Override
 	public boolean openGUI(EntityPlayerMP player) {
 		destroy(player);
 		return super.openGUI(player);
@@ -89,25 +98,12 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 		items.clear();
 		for (int i = 0; i < size; i++) {
 			StackWrapper sw = StackWrapper.loadStackWrapperFromNBT(NBTHelper.get(compound, "item" + i, NBTTagCompound.class));
-			if (sw != null)
+			if (sw != null) {
 				items.add(sw);
+			}
 		}
 		name = NBTHelper.get(compound, "name", String.class);
 		super.readFromNBT(compound);
-	}
-
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		NBTHelper.set(compound, "itemsize", items.size());
-		for (int i = 0; i < items.size(); i++)
-			NBTHelper.set(compound, "item" + i, items.get(i).writeToNBT(new NBTTagCompound()));
-		NBTHelper.set(compound, "name", name);
-		return super.writeToNBT(compound);
-	}
-
-	@Override
-	public List<String> getData(boolean sneak, EnumFacing facing) {
-		return Collections.singletonList(TextFormatting.GOLD + "Owner: " + (name == null ? TextFormatting.RED : TextFormatting.GREEN) + name);
 	}
 
 	@Override
@@ -116,8 +112,13 @@ public class TileKeeper extends CommonTile implements IHUDProvider {
 	}
 
 	@Override
-	public boolean lineBreak(boolean sneak, EnumFacing facing) {
-		return false;
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		NBTHelper.set(compound, "itemsize", items.size());
+		for (int i = 0; i < items.size(); i++) {
+			NBTHelper.set(compound, "item" + i, items.get(i).writeToNBT(new NBTTagCompound()));
+		}
+		NBTHelper.set(compound, "name", name);
+		return super.writeToNBT(compound);
 	}
 
 }
