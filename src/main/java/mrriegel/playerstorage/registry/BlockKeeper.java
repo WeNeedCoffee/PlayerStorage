@@ -26,7 +26,7 @@ public class BlockKeeper extends CommonBlockContainer<TileKeeper> {
 		setResistance(6000000.0F);
 		setSoundType(SoundType.STONE);
 	}
-
+	
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 		return Items.AIR;

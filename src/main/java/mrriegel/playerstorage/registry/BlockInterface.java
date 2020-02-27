@@ -32,10 +32,6 @@ public class BlockInterface extends CommonBlockContainer<TileInterface> {
 	protected Class<? extends TileInterface> getTile() {
 		return TileInterface.class;
 	}
-	public void registerItem() {
-		RegistryHelper.register(this);
-	}
-	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);
